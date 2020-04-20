@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.efe.ms.crawlerservice.dao.UserDao;
 import com.efe.ms.crawlerservice.model.common.User;
@@ -41,6 +42,16 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public List<User> findAllUsers(User user) {
 		return userDao.getListByEntity(user);
+	}
+
+	@Override
+	@Transactional
+	public User addUser(User user) {
+		if(user == null) {
+			throw new RuntimeException("无效参数");
+		}
+		userDao.add(user);
+		return user;
 	}
 	
 

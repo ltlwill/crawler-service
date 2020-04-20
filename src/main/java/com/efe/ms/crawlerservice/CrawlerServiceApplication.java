@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * 
- * 邮件服务应用启动入口
+ *  爬虫服务应用启动入口
  * @author TianLong Liu
  * @date 2019年11月6日 下午4:21:09
  */
@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @ServletComponentScan
 public class CrawlerServiceApplication {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) { 
 		SpringApplication.run(CrawlerServiceApplication.class, args);
 	}
 

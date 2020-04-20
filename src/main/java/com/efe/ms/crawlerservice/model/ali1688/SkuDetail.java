@@ -21,5 +21,5 @@ public class SkuDetail extends SerializationEntity {
 	private Integer saleCount;
 	private String priceRange;
 	private List<SkuProp> skuProps;
-	private List<Map<String, SkuMapValue>> skuMap;
+	private Map<String, SkuMapValue> skuMap;
 }

@@ -7,7 +7,7 @@ create table if not exists t_user(
   name varchar(100) COMMENT '账号',
   nick_name varchar(100) COMMENT '姓名',
   password varchar(50) COMMENT '密码',
-  phoneNo varchar(50) COMMENT '电话号码',
+  phone_no varchar(50) COMMENT '电话号码',
   PRIMARY KEY (id)
 )ENGINE=InnoDB DEFAULT CHARSET=UTF8mb4 COMMENT='用户表';
 
