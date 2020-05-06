@@ -1,5 +1,7 @@
 package com.efe.ms.crawlerservice.service.ali1688;
 
+import java.util.Objects;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -33,6 +35,18 @@ public class Ali1688ProductServiceImpl implements Ali1688ProductService {
 		}
 		return productRepository.save(product);
 	}
+	
+	@Override
+	public Ali1688Product addWithDeduplication(Ali1688Product product) {
+		Objects.requireNonNull(product,"无效参数");
+		Ali1688Product aliProduct = new Ali1688Product();
+		aliProduct.setProductId(product.getProductId());
+		long count = productRepository.count(Example.of(aliProduct));
+		if(count == 0) {
+			add(product);
+		}
+		return product;
+	}
 
 	@Override
 	public void crawlData(crawlParams params) throws Exception {
@@ -45,6 +59,19 @@ public class Ali1688ProductServiceImpl implements Ali1688ProductService {
 		PageRequest pageRequest = PageRequest.of(page.getPageNumber(), page.getPageSize(),
 				Sort.by(Direction.DESC, "createTime"));
 		return productRepository.findAll(example, pageRequest);
+	}
+
+	@Override
+	public void delete(Ali1688Product product) {
+		if (product == null) {
+			throw new RuntimeException("无效参数");
+		}
+		productRepository.delete(product); 
+	}
+
+	@Override
+	public void deleteAll() {
+		productRepository.deleteAll();
 	}
 
 }

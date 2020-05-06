@@ -10,10 +10,10 @@
 		<result column="phone_no" property="phoneNo" jdbcType="VARCHAR" />	
 	</resultMap>
 
-	<sql id="base_columns">
+	<sql id="baseColumns">
 		id,name,nick_name,password,phone_no
 	</sql>
-	<sql id="insert_columns">
+	<sql id="insertColumns">
 		name,nick_name,password,phone_no
 	</sql>
 	
@@ -23,7 +23,7 @@
 	
 	<!-- 公共查询语句 -->
 	<sql id="querycommonSql">
-		SELECT <include refid="base_columns"/> FROM t_user
+		SELECT <include refid="baseColumns"/> FROM t_user
 		<include refid="queryConditionSql" />
 	</sql>
 	
@@ -64,7 +64,7 @@
 				AND name = #{name,jdbcType=VARCHAR}
 			</if>
 			<if test="nickName != '' and nickName != null">
-				AND nickName = #{nickName,jdbcType=VARCHAR}
+				AND nick_Name = #{nickName,jdbcType=VARCHAR}
 			</if>
 		</where>
 	</sql>
@@ -72,7 +72,7 @@
 	<!-- 保存 -->
 	<insert id="add" parameterType="User" useGeneratedKeys="true" keyProperty="id">
 		INSERT INTO t_user(
-			<include refid="insert_columns"/>
+			<include refid="insertColumns"/>
 		)
 		VALUES(
 			#{name,jdbcType=VARCHAR},
@@ -84,7 +84,7 @@
 	
 	<!-- 批量删除 -->
 	<select id="getByIds" parameterType="java.util.List" resultMap="UserMap">
-		SELECT <include refid="base_columns"/> FROM t_user
+		SELECT <include refid="baseColumns"/> FROM t_user
 		<where>
 			<if test="list != null and list.size() > 0">
 				id IN

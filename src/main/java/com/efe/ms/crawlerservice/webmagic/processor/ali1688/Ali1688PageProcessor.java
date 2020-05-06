@@ -1,7 +1,9 @@
 package com.efe.ms.crawlerservice.webmagic.processor.ali1688;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.alibaba.fastjson.JSON;
@@ -17,6 +19,8 @@ import com.efe.ms.crawlerservice.webmagic.processor.common.BasePageProcessor;
 
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
+import us.codecraft.webmagic.Spider;
+import us.codecraft.webmagic.selector.Html;
 import us.codecraft.webmagic.selector.Selectable;
 
 /**
@@ -33,11 +37,13 @@ public class Ali1688PageProcessor extends BasePageProcessor {
 	private static final int PAGE_COUNT = 10; // 要抓取多少页的数据
 	private static final int THREAD_COUNT = 5; // 要开启的线程数
 	private static final int PAGE_JSONP_REQUEST_COUNT = 6; // 每一页中的数据需要发送的jsonp 请求的次数
+	private static final String KEY_CONCAT_CHAR = "|";
 
 	private crawlParams params;
 	private String taskNo = System.nanoTime() + "";
 	private int total = 0;
 	private int errorCount = 0;
+	private Set<String> keySet = new HashSet<>();
 
 	public Ali1688PageProcessor() {
 		this(new crawlParams(KEYWORDS, PAGE_COUNT, THREAD_COUNT));
@@ -58,21 +64,39 @@ public class Ali1688PageProcessor extends BasePageProcessor {
 			addProductDetailTargetUrls(page, json);
 		} else if (url.regex("(.*)dj.1688.com/ci_bb(.*)").match()) { // 详情页
 			try {
-				this.total ++;
+				this.total++;
+				String key = getProductUniqueKey(page.getHtml());
+				if (isProcessed(key)) { // 已经处理过的产品不再处理
+					logger.info(String.format("唯一标识：key=[%s] 已处理过", key));
+					return;
+				}
 				Product product = ParserBuilder.build(Ali1688PageParser.class).parse(page); // 解析页面
 				product.setTaskNo(this.taskNo);
 				product.setSearchKeyword(this.params.getKeywords());
 				page.putField(Constants.PRODUCT_FIELD_NAME, product);
-//				System.out.println(JSON.toJSONString(product));
 			} catch (Exception e) {
-				this.errorCount ++;
+				this.errorCount++;
 				logger.error("解析页面异常，url=" + url.toString(), e);
 			}
-			System.out.println("---总：" + total + "；失败：" + errorCount);
+			logger.info("---总：" + total + "；失败：" + errorCount);
 		} else {
 			logger.debug("未知类型的页面");
 		}
-		
+
+	}
+
+	private String getProductUniqueKey(Html html) {
+		String productId = getString(html.xpath("//meta[@name=\"b2c_auction\"]/@content"));
+		String productName = getString(html.xpath("//meta[@property=\"og:title\"]/@content"));
+		return productId + KEY_CONCAT_CHAR + productName; // 产品ID和产品名称组成唯一标识
+	}
+
+	private synchronized boolean isProcessed(String key) {
+		if (keySet.contains(key)) {
+			return true;
+		}
+		keySet.add(key); // 记录是否处理过此产品，用于过滤重复的产品
+		return false;
 	}
 
 	private void addProductDetailTargetUrls(Page page, JSONObject json) {
@@ -118,11 +142,11 @@ public class Ali1688PageProcessor extends BasePageProcessor {
 		urlTpl = urlTpl.replaceAll("\\$\\{random2\\}", generateRandomNo());
 		return urlTpl;
 	}
-	
+
 	private String generateCallbackRandomNo() {
 		return (System.nanoTime() + Math.abs(new Random().nextInt(100))) + "";
 	}
-	
+
 	private String generateRandomNo() {
 		return (Math.abs(new Random().nextInt(10000))) + "";
 	}
@@ -154,12 +178,15 @@ public class Ali1688PageProcessor extends BasePageProcessor {
 	}
 
 	public void run() throws Exception {
-		buildSpider(this).addUrl(ENTRANCE_URL).addPipeline(new Ali1688ProductsPipeline())
-				.thread(this.params.getThreadCount()).run();
+		buildSpider().run();
 	}
 
-	public void run(crawlParams params) throws Exception {
-		buildSpider(this).addUrl(ENTRANCE_URL).addPipeline(new Ali1688ProductsPipeline())
-				.thread(this.params.getThreadCount()).run();
+	public void runAsync() throws Exception {
+		buildSpider().runAsync();
+	}
+
+	private Spider buildSpider() throws Exception {
+		return buildSpider(this).addUrl(ENTRANCE_URL).addPipeline(new Ali1688ProductsPipeline())
+				.thread(this.params.getThreadCount());
 	}
 }

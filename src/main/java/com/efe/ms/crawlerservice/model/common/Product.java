@@ -1,6 +1,7 @@
 package com.efe.ms.crawlerservice.model.common;
 
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -32,9 +33,13 @@ public class Product extends BizModel {
 	// 产品链接地址
 	protected String productLinkUrl;
 	// 产品类目ID
-	protected String cateId;
+	protected String categoryId;
 	// 产品类目名称
-	protected String cateName;
+	protected String categoryName;
+	// 类目集合
+	protected List<ProductCategory> categoryList;
+	// 库存
+	protected Integer stock;
 	// 创建时间
 //	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

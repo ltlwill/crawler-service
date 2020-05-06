@@ -40,5 +40,17 @@ public class Ali1688ProductController extends BaseController {
 		}
 		return res;
 	}
+	
+	@RequestMapping("/delete")
+	public BusinessResult delete(Ali1688Product product) {
+		productService.delete(product);
+		return BusinessResult.success();
+	}
+	
+	@RequestMapping("/delete/all")
+	public BusinessResult deleteAll() {
+		productService.deleteAll();
+		return BusinessResult.success();
+	}
 
 }

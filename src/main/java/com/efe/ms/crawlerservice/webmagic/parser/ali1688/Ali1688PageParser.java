@@ -20,6 +20,7 @@ import com.efe.ms.crawlerservice.model.ali1688.DescDetail;
 import com.efe.ms.crawlerservice.model.ali1688.GalleryImage;
 import com.efe.ms.crawlerservice.model.ali1688.SkuDetail;
 import com.efe.ms.crawlerservice.model.common.Product;
+import com.efe.ms.crawlerservice.model.common.ProductCategory;
 import com.efe.ms.crawlerservice.model.common.Seller;
 import com.efe.ms.crawlerservice.webmagic.parser.common.BasePageParser;
 
@@ -38,6 +39,7 @@ public class Ali1688PageParser extends BasePageParser<Product> {
 	private static final String DETAIL_CONFIG_FLAG = "var iDetailConfig =";
 	private static final String DETAIL_DATA_FLAG = "var iDetailData =";
 	private static final String DETAIL_ALL_TAG_FLAG = "iDetailData.allTagIds =";
+	private static final String DETAIL_CATEGORY_RENDER_FLAG = "iDetailData.registerRenderData(";
 	private static final String VAR_DESC_FLAG = "var desc='";
 
 	private static final String DETAIL_CONFIG_KEY = "detailConfig";
@@ -91,22 +93,8 @@ public class Ali1688PageParser extends BasePageParser<Product> {
 	 */
 	private Ali1688Product parseAsProduct(Page page, JSONObject cfg, JSONObject data) {
 		Html html = page.getHtml();
-		Ali1688Product product = new Ali1688Product();
-		// product info
-		product.setProductId(getString(html.xpath("//meta[@name=\"b2c_auction\"]/@content")));
-		product.setProductName(getString(html.xpath("//meta[@property=\"og:title\"]/@content")));
-		product.setProductImageUrl(getString(html.xpath("//meta[@property=\"og:image\"]/@content")));
-		product.setProductLinkUrl(getString(page.getUrl()));
-		product.setKeywords(getString(html.xpath("//meta[@name=\"keywords\"]/@content")));
-
-		product.setCateId(getStringByJSONPath(cfg, "$.catid"));
-		product.setUnit(getStringByJSONPath(cfg, "$.unit"));
-		product.setPriceUnit(getStringByJSONPath(cfg, "$.priceUnit"));
-		product.setBeginPrice(getStringByJSONPath(cfg, "$.refPrice"));
-		product.setBeginAmount(getStringByJSONPath(cfg, "$.beginAmount"));
-		product.setStatus(Product.Status.VALID);
-		product.setCreateTime(new Date());
-
+		// base product info
+		Ali1688Product product = parseProductBaseInfo(page,html,cfg);
 		// seller info
 		product.setSeller(parseSellerInfo(html, cfg));
 		// sku info
@@ -116,6 +104,69 @@ public class Ali1688PageParser extends BasePageParser<Product> {
 		// images info
 		product.setGalleryImages(parseGalleryImages(html));
 		return product;
+	}
+	
+	/**
+	 * 解析产品基础信息
+	 * @param page
+	 * @param html
+	 * @param cfg
+	 * @return
+	 */
+	private Ali1688Product parseProductBaseInfo(Page page,Html html,JSONObject cfg) {
+		Ali1688Product product = new Ali1688Product();
+		product.setProductId(getString(html.xpath("//meta[@name=\"b2c_auction\"]/@content")));
+		product.setProductName(getString(html.xpath("//meta[@property=\"og:title\"]/@content")));
+		product.setProductImageUrl(getString(html.xpath("//meta[@property=\"og:image\"]/@content")));
+		product.setProductLinkUrl(getString(page.getUrl()));
+		product.setKeywords(getString(html.xpath("//meta[@name=\"keywords\"]/@content")));
+
+		product.setCategoryId(getStringByJSONPath(cfg, "$.catid"));
+		product.setUnit(getStringByJSONPath(cfg, "$.unit"));
+		product.setPriceUnit(getStringByJSONPath(cfg, "$.priceUnit"));
+		product.setBeginPrice(getStringByJSONPath(cfg, "$.refPrice"));
+		product.setBeginAmount(getStringByJSONPath(cfg, "$.beginAmount"));
+		product.setStatus(Product.Status.VALID);
+		product.setCreateTime(new Date());
+		
+		// 解析类目信息
+		parseAndSetProductCategoryInfo(page,html,product);
+		return product;
+	}
+	
+	/**
+	 * 解析产品类目相关信息
+	 * @param page
+	 * @param html
+	 * @param product
+	 */
+	private void parseAndSetProductCategoryInfo(Page page,Html html,Ali1688Product product) {
+		try {
+			String htmlStr = html.toString();
+			int bIdx = htmlStr.indexOf(DETAIL_CATEGORY_RENDER_FLAG);
+			if(bIdx < 0) {
+				return;
+			}
+			htmlStr = htmlStr.substring(bIdx + DETAIL_CATEGORY_RENDER_FLAG.length());
+			int eIdx = htmlStr.indexOf("</script>");
+			if(eIdx < 0) {
+				return;
+			}
+			String jsonStr = htmlStr.substring(0, eIdx);
+			jsonStr = jsonStr == null ? "" : jsonStr.trim();
+			jsonStr = jsonStr.endsWith(");") ? jsonStr.substring(0, jsonStr.lastIndexOf(");")) : jsonStr;
+			JSONObject json = JSON.parseObject(jsonStr);
+			if(json != null && json.containsKey("sellerInf") && json.containsKey("categoryId")) {
+				product.setCategoryId(getStringByJSONPath(json, "$.categoryId"));
+				product.setCategoryName(getStringByJSONPath(json, "$.categoryName"));
+				String stock = getStringByJSONPath(json, "$.stock");
+				product.setStock(StringUtils.isBlank(stock) ? null : Integer.valueOf(stock));
+				String categoryList = getStringByJSONPath(json, "$.categoryList");
+				product.setCategoryList(StringUtils.isBlank(categoryList) ? null : JSON.parseArray(categoryList, ProductCategory.class));
+			}
+		}catch (Exception e) {
+			logger.error(String.format("解析产品类目信息失败,url=%s", product.getProductLinkUrl()));
+		}
 	}
 
 	/**

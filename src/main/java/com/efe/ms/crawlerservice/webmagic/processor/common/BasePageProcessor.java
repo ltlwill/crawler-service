@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONPath;
 import com.efe.ms.crawlerservice.extension.HttpClientDownloader;
 
 import us.codecraft.webmagic.Page;
@@ -13,6 +14,7 @@ import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.Spider;
 import us.codecraft.webmagic.downloader.Downloader;
 import us.codecraft.webmagic.processor.PageProcessor;
+import us.codecraft.webmagic.proxy.ProxyProvider;
 import us.codecraft.webmagic.selector.Selectable;
 
 /**
@@ -51,8 +53,17 @@ public abstract class BasePageProcessor implements PageProcessor {
 		return DEFAULT_CHAR_SET_STR;
 	}
 	
-	protected static Downloader createDownloader() {
-		return new HttpClientDownloader();
+	protected Downloader createDownloader() {
+		HttpClientDownloader downloader = new HttpClientDownloader();
+		ProxyProvider provider = createProxyProvider();
+		if(provider != null) {
+			downloader.setProxyProvider(provider);
+		}
+		return downloader;
+	}
+	
+	protected ProxyProvider createProxyProvider() {
+		return null;
 	}
 	
 	protected JSONObject extraDataFromJsonp(String jsonp) {
@@ -76,12 +87,29 @@ public abstract class BasePageProcessor implements PageProcessor {
 		return StringUtils.isBlank(val) ? "" : val.trim();
 	}
 
-	public static Spider buildSpider(PageProcessor processor) {
+	public Spider buildSpider(PageProcessor processor) {
 		return Spider.create(processor).setDownloader(createDownloader());
 	}
 
-	public static Spider buildSpider(Class<? extends PageProcessor> clazz) throws Exception {
+	public Spider buildSpider(Class<? extends PageProcessor> clazz) throws Exception {
 		return Spider.create(clazz.newInstance()).setDownloader(createDownloader());
+	}
+	
+	protected String getString(Selectable selectable) {
+		if(selectable == null) {
+			return "";
+		}
+		String val = selectable.get();
+		return val == null ? "" : val.trim();
+	}
+	
+	protected String getStringByJSONPath(Object obj,String path) {
+		Object res = JSONPath.eval(obj,path);
+		return res == null ? "" : String.valueOf(res).trim();
+	}
+	
+	protected String trimString(String str) {
+		return str == null ? "" : str.trim();
 	}
 
 }
