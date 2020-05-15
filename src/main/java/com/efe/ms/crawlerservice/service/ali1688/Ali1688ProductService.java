@@ -1,10 +1,8 @@
 package com.efe.ms.crawlerservice.service.ali1688;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-
 import com.efe.ms.crawlerservice.model.ali1688.Ali1688Product;
 import com.efe.ms.crawlerservice.model.common.crawlParams;
+import com.efe.ms.crawlerservice.vo.PaginationVO;
 
 /**
  * ali 1688 产品业务接口
@@ -40,7 +38,7 @@ public interface Ali1688ProductService {
 	 * @param page
 	 * @return
 	 */
-	Page<Ali1688Product> findAll(Ali1688Product product,PageRequest page);
+	PaginationVO findAll(Ali1688Product product,PaginationVO page);
 	
 	/**
 	 * 根据条件删除产品

@@ -26,7 +26,9 @@ public class Ali1688Product extends Product {
 	// 起拍数量
 	protected String beginAmount;
 	// 起拍价格
-	protected String beginPrice;
+	protected Double beginPrice;
+	// 起拍价格字符串
+	protected String beginPriceStr;
 	// 关键词
 	protected String keywords;
 	// sku明细

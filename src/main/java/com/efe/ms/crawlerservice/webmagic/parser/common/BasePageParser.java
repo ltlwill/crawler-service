@@ -1,5 +1,7 @@
 package com.efe.ms.crawlerservice.webmagic.parser.common;
 
+import java.math.BigDecimal;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,6 +57,36 @@ public class BasePageParser<T> implements PageParser<T> {
 	
 	protected String trimString(String str) {
 		return str == null ? "" : str.trim();
+	}
+	
+	protected BigDecimal toBigDecimal(String str) {
+		if(str == null || "".equals(str.trim())) {
+			return BigDecimal.valueOf(0);
+		}
+		return new BigDecimal(str);
+	}
+	protected BigDecimal toDouble(String str) {
+		if(str == null || "".equals(str.trim())) {
+			return BigDecimal.valueOf(0);
+		}
+		return new BigDecimal(str);
+	}
+	protected Integer toInteger(String str) {
+		if(str == null || "".equals(str.trim())) {
+			return 0;
+		}
+		return Integer.valueOf(str);
+	}
+	
+	protected Double toDoubleAsZeroWhenException(String str) {
+		if(str == null || "".equals(str.trim())) {
+			return Double.valueOf(0);
+		}
+		try {
+			return Double.valueOf(str);
+		}catch(Exception e) {
+			return Double.valueOf(0);
+		}
 	}
 
 }

@@ -1,5 +1,9 @@
 package com.example.demo;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.efe.ms.crawlerservice.util.SimpleRequestUtil;
@@ -22,5 +26,14 @@ public class UrlTest {
 	public void test2() throws Exception{
 		String str = SimpleRequestUtil.doGetAsString(url, "gbk");
 		System.out.println(str); 
+	}
+	
+	@Test
+	public void test3() throws Exception{
+		String url = "https://detail.1688.com/offer/608561658438.html?spm=a312h.2018_new_sem.dh_002.1.15053da63rLPUJ&tracelog=p4p&clickid=f27b8cc3b0794732ab0c2582dd0d440e&sessionid=14b5d11e4653b28f53e627299b3ceeb4";
+		Pattern pattern = Pattern.compile("(.*)detail.1688.com/offer/(\\d+).html(.*)");
+		Matcher matcher = pattern.matcher(url);
+//		Assert.assertTrue(matcher.find());
+		Assert.assertTrue(matcher.matches());
 	}
 }

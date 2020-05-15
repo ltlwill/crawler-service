@@ -1,7 +1,9 @@
 package com.efe.ms.crawlerservice.webmagic.processor.ali1688;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -32,7 +34,7 @@ import us.codecraft.webmagic.selector.Selectable;
 public class Ali1688PageProcessor extends BasePageProcessor {
 
 	private static final String DEFUALT_CHARSET = "GBK";
-	private static final String ENTRANCE_URL = "https://p4psearch.1688.com/p4p114/p4psearch/offer.htm"; // 抓取数据入口地址
+//	private static final String ENTRANCE_URL = "https://p4psearch.1688.com/p4p114/p4psearch/offer.htm"; // 抓取数据入口地址
 	private static final String KEYWORDS = "修身连衣裙"; // 要抓取的关键词
 	private static final int PAGE_COUNT = 10; // 要抓取多少页的数据
 	private static final int THREAD_COUNT = 5; // 要开启的线程数
@@ -46,10 +48,15 @@ public class Ali1688PageProcessor extends BasePageProcessor {
 	private Set<String> keySet = new HashSet<>();
 
 	public Ali1688PageProcessor() {
-		this(new crawlParams(KEYWORDS, PAGE_COUNT, THREAD_COUNT));
+		this("", new crawlParams(KEYWORDS, null, PAGE_COUNT, THREAD_COUNT));
 	}
 
-	public Ali1688PageProcessor(crawlParams params) {
+	public Ali1688PageProcessor(String taskNo) {
+		this(taskNo, new crawlParams(KEYWORDS, null, PAGE_COUNT, THREAD_COUNT));
+	}
+
+	public Ali1688PageProcessor(String taskNo, crawlParams params) {
+		this.taskNo = taskNo;
 		this.params = params;
 	}
 
@@ -62,7 +69,8 @@ public class Ali1688PageProcessor extends BasePageProcessor {
 		} else if (url.regex("(.*)get_premium_offer_list.json(.*)").match()) { // jsonp 的ajax请求
 			JSONObject json = extraDataFromJsonp(page.getRawText());
 			addProductDetailTargetUrls(page, json);
-		} else if (url.regex("(.*)dj.1688.com/ci_bb(.*)").match()) { // 详情页
+		} else if (url.regex("(.*)dj.1688.com/ci_bb(.*)").match()
+				|| url.regex("(.*)detail.1688.com/offer/(\\d+).html(.*)").match()) { // 详情页
 			try {
 				this.total++;
 				String key = getProductUniqueKey(page.getHtml());
@@ -186,7 +194,12 @@ public class Ali1688PageProcessor extends BasePageProcessor {
 	}
 
 	private Spider buildSpider() throws Exception {
-		return buildSpider(this).addUrl(ENTRANCE_URL).addPipeline(new Ali1688ProductsPipeline())
+		Spider spider = buildSpider(this).addPipeline(new Ali1688ProductsPipeline())
 				.thread(this.params.getThreadCount());
+		if (this.params != null) {
+			Optional.ofNullable(this.params.getEntranceUrls()).orElse(Collections.emptyList()).stream()
+					.forEach(url -> spider.addUrl(url));
+		}
+		return spider;
 	}
 }

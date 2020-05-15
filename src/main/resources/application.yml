@@ -42,9 +42,10 @@ spring:
   data:
     # mongodb    mongodb:      host: 192.168.2.6
       port: 27017
-      username: test
+      username: crawler
       password: test1234
-      authentication-database: test
+      authentication-database: crawler
+      database: crawler
       
 # 集成MyBatis  
 mybatis:   

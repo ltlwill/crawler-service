@@ -124,7 +124,8 @@ public class Ali1688PageParser extends BasePageParser<Product> {
 		product.setCategoryId(getStringByJSONPath(cfg, "$.catid"));
 		product.setUnit(getStringByJSONPath(cfg, "$.unit"));
 		product.setPriceUnit(getStringByJSONPath(cfg, "$.priceUnit"));
-		product.setBeginPrice(getStringByJSONPath(cfg, "$.refPrice"));
+		product.setBeginPriceStr(getStringByJSONPath(cfg, "$.refPrice"));
+		product.setBeginPrice(toDoubleAsZeroWhenException(product.getBeginPriceStr()));
 		product.setBeginAmount(getStringByJSONPath(cfg, "$.beginAmount"));
 		product.setStatus(Product.Status.VALID);
 		product.setCreateTime(new Date());
@@ -202,7 +203,12 @@ public class Ali1688PageParser extends BasePageParser<Product> {
 		if (StringUtils.isBlank(skuJsonStr)) {
 			return null;
 		}
-		return JSON.parseObject(skuJsonStr, SkuDetail.class);
+		SkuDetail detail = JSON.parseObject(skuJsonStr, SkuDetail.class);
+		String mmonthSaleStr = getString(html.xpath("//div[@class=\"widget-custom-container\"]//p[@class=\"bargain-number\"]//a[@rel=\"nofollow\"]//em[@class=\"value\"]/text()"));
+		String reviewCountStr = getString(html.xpath("//div[@class=\"widget-custom-container\"]//p[@class=\"satisfaction-number\"]//a[@rel=\"nofollow\"]//em[@class=\"value\"]/text()"));
+		detail.setMonthlySaleCount(toInteger(mmonthSaleStr));
+		detail.setReviewCount(toInteger(reviewCountStr));
+		return detail;
 	}
 
 	/**
@@ -312,7 +318,7 @@ public class Ali1688PageParser extends BasePageParser<Product> {
 		}
 		return list.get(idx);
 	}
-
+	
 	private String requestDescription(String url) {
 		if (StringUtils.isBlank(url)) {
 			return null;

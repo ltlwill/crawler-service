@@ -6,3 +6,4 @@ mybatis:
 logging: 
   level: 
     com.efe.ms.crawlerservice.dao: debug
+    com.efe.ms.crawlerservice.mongorepo: info

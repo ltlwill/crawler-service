@@ -16,6 +16,15 @@ db.createUser(
              { role: "read", db: "reporting" } ]
   }
 )
+-- 创建用户	crawler
+db.createUser(
+  {
+    user: "crawler",
+    pwd:  passwordPrompt(),
+    roles: [ { role: "readWrite", db: "crawler" },
+             { role: "read", db: "reporting" } ]
+  }
+)
 -- 创建用户 reportsUser
 db.createUser(
   {

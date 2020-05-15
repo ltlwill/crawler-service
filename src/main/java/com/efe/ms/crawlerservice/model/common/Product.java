@@ -41,8 +41,8 @@ public class Product extends BizModel {
 	// 库存
 	protected Integer stock;
 	// 创建时间
-//	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm",timezone = "GMT+8")
+//	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	protected Date createTime;
 	// 状态
 	protected Integer status;
