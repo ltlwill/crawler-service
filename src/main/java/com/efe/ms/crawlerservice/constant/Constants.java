@@ -10,6 +10,6 @@ public final class Constants {
 	public static final String PRODUCT_FIELD_NAME = "product";
 	
 	public static class Entrance{
-		public static final String ALI_1688 = "https://p4psearch.1688.com/p4p114/p4psearch/offer.htm"; // ali 1688
+		public static final String ALI_RE_1688 = "https://p4psearch.1688.com/p4p114/p4psearch/offer.htm"; // ali 1688
 	}
 }

@@ -1,7 +1,7 @@
 package com.efe.ms.crawlerservice.service.common;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
@@ -32,7 +32,7 @@ public class DataCollectionTaskServiceImpl extends BaseServiceImpl implements Da
 	@Override
 	public DataCollectionTask add(DataCollectionTask task) {
 		Objects.requireNonNull(task);
-		task.setCreateTime(new Date());
+		task.setCreateTime(LocalDateTime.now());
 		task.setStatus(DataCollectionTask.Status.UNPROCESSED);
 		return dataCollectionTaskRepository.insert(task);
 	}
@@ -80,7 +80,7 @@ public class DataCollectionTaskServiceImpl extends BaseServiceImpl implements Da
 			task.setStatus(DataCollectionTask.Status.PROCESS_FAIL);
 			task.setDebugMessage(e.getMessage());
 		} finally {
-			task.setEndTime(new Date());
+			task.setEndTime(LocalDateTime.now());
 			task = update(task);
 		}
 		return task;
@@ -94,7 +94,7 @@ public class DataCollectionTaskServiceImpl extends BaseServiceImpl implements Da
 			params.setEntranceUrls(task.getUrls());
 			new Ali1688PageProcessor(task.getId(), params).run();
 		} else if (Integer.valueOf(DataCollectionTask.Type.KEYWORD).equals(task.getType())) { // 按关键词采集
-			params.setEntranceUrls(Arrays.asList(Constants.Entrance.ALI_1688));
+			params.setEntranceUrls(Arrays.asList(Constants.Entrance.ALI_RE_1688));
 			task.getKeywords().forEach(keyword -> {
 				params.setKeywords(keyword);
 				try {

@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @MapperScan("com.efe.ms.**.dao")
 @EnableScheduling
 @ServletComponentScan
+//@ComponentScan(basePackages = "com.efe.ms")
 public class CrawlerServiceApplication {
 
 	public static void main(String[] args) { 

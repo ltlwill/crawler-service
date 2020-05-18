@@ -8,8 +8,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.efe.ms.crawlerservice.dao.UserDao;
+import com.efe.ms.crawlerservice.model.common.SysUser;
 import com.efe.ms.crawlerservice.model.common.User;
 import com.efe.ms.crawlerservice.mongorepo.UserRepository;
+import com.efe.ms.crawlerservice.repo.MyUserRepository;
 
 /**
  * 用户业务接口
@@ -22,6 +24,9 @@ public class UserServiceImpl implements UserService {
 	
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	private MyUserRepository myUserRepository;
 	
 	@Autowired
 	private UserDao userDao;
@@ -52,6 +57,11 @@ public class UserServiceImpl implements UserService {
 		}
 		userDao.add(user);
 		return user;
+	}
+
+	@Override
+	public List<SysUser> findAllFromMySql() {
+		return myUserRepository.findAll();
 	}
 	
 

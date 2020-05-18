@@ -1,6 +1,6 @@
 package com.efe.ms.crawlerservice.model.common;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -46,9 +46,9 @@ public class DataCollectionTask extends BizModel {
 	private Integer threadCount = 5; // 按关键词, 分类采集时 有效（每个关键词都开启此数据的线程）
 	// 创建时间
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm",timezone = "GMT+8")
-	private Date createTime;
+	private LocalDateTime createTime;
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm",timezone = "GMT+8")
-	private Date endTime;
+	private LocalDateTime endTime;
 	
 	public static final class Type{
 		public static final int SINGLE_PRODUCT = 0; // 单品采集

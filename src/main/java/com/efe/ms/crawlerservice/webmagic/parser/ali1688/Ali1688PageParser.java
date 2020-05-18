@@ -1,7 +1,7 @@
 package com.efe.ms.crawlerservice.webmagic.parser.ali1688;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -128,7 +128,7 @@ public class Ali1688PageParser extends BasePageParser<Product> {
 		product.setBeginPrice(toDoubleAsZeroWhenException(product.getBeginPriceStr()));
 		product.setBeginAmount(getStringByJSONPath(cfg, "$.beginAmount"));
 		product.setStatus(Product.Status.VALID);
-		product.setCreateTime(new Date());
+		product.setCreateTime(LocalDateTime.now());
 		
 		// 解析类目信息
 		parseAndSetProductCategoryInfo(page,html,product);
@@ -200,10 +200,12 @@ public class Ali1688PageParser extends BasePageParser<Product> {
 	 */
 	private SkuDetail parseSkuDetailInfo(Html html, JSONObject skuData) {
 		String skuJsonStr = getStringByJSONPath(skuData, "$.sku");
+		SkuDetail detail = null;
 		if (StringUtils.isBlank(skuJsonStr)) {
-			return null;
+			detail = new SkuDetail();
+		}else {
+			detail = JSON.parseObject(skuJsonStr, SkuDetail.class);
 		}
-		SkuDetail detail = JSON.parseObject(skuJsonStr, SkuDetail.class);
 		String mmonthSaleStr = getString(html.xpath("//div[@class=\"widget-custom-container\"]//p[@class=\"bargain-number\"]//a[@rel=\"nofollow\"]//em[@class=\"value\"]/text()"));
 		String reviewCountStr = getString(html.xpath("//div[@class=\"widget-custom-container\"]//p[@class=\"satisfaction-number\"]//a[@rel=\"nofollow\"]//em[@class=\"value\"]/text()"));
 		detail.setMonthlySaleCount(toInteger(mmonthSaleStr));

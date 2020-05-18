@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.efe.ms.crawlerservice.model.common.SysUser;
 import com.efe.ms.crawlerservice.model.common.User;
 import com.efe.ms.crawlerservice.service.common.UserService;
 import com.efe.ms.crawlerservice.vo.BusinessResult;
@@ -23,6 +24,11 @@ public class UserController extends BaseController{
 	@RequestMapping(method = RequestMethod.GET)
 	public List<User> findAll(){
 		return userService.findAll();
+	}
+	
+	@RequestMapping(value = "/mysql",method = RequestMethod.GET)
+	public List<SysUser> findAllFromMySql(){
+		return userService.findAllFromMySql();
 	}
 	
 	@RequestMapping("/{name}")

@@ -32,7 +32,13 @@ spring:
       enabled: true
       force: true
       charset: UTF-8
-          
+  jpa:    hibernate:
+      ddl-auto: update      naming:        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    #properties:      #hibernate:
+        #hbm2ddl:
+          #auto: none
+        #dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+    show-sql: true                        
   redis: 
     host: 192.168.2.6
     port: 6379

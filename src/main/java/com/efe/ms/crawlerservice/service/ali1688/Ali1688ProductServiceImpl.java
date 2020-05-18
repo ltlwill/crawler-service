@@ -1,7 +1,7 @@
 package com.efe.ms.crawlerservice.service.ali1688;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -71,7 +71,7 @@ public class Ali1688ProductServiceImpl extends BaseServiceImpl implements Ali168
 		task.setStatus(DataCollectionTask.Status.PROCCCESSING);
 		task = dataCollectionTaskService.add(task);
 		try {
-			params.setEntranceUrls(Arrays.asList(Constants.Entrance.ALI_1688));
+			params.setEntranceUrls(Arrays.asList(Constants.Entrance.ALI_RE_1688));
 			new Ali1688PageProcessor(task.getId(),params).run();
 			task.setStatus(DataCollectionTask.Status.PROCESS_SUCCESS);
 		}catch (Exception e) {
@@ -79,7 +79,7 @@ public class Ali1688ProductServiceImpl extends BaseServiceImpl implements Ali168
 			logger.error("采集数据任务实行失败",e);
 			throw e;
 		}finally {
-			task.setEndTime(new Date());
+			task.setEndTime(LocalDateTime.now());
 			dataCollectionTaskService.update(task);
 		}
 	}

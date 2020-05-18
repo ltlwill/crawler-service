@@ -1,6 +1,6 @@
 package com.efe.ms.crawlerservice.model.common;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -43,7 +43,7 @@ public class Product extends BizModel {
 	// 创建时间
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm",timezone = "GMT+8")
 //	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
-	protected Date createTime;
+	protected LocalDateTime createTime;
 	// 状态
 	protected Integer status;
 	

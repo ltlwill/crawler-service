@@ -9,11 +9,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @SuppressWarnings("serial")
 @Getter
 @Setter
+@NoArgsConstructor
 public class PaginationVO implements Serializable {
 
 	protected int pageNo = 1;
@@ -24,9 +26,6 @@ public class PaginationVO implements Serializable {
 	protected String sortProp;
 	protected String sortType;
 	protected String keyword;
-
-	public PaginationVO() {
-	}
 
 	protected PaginationVO(int pageNo, int pageSize) {
 		this.pageNo = pageNo;
