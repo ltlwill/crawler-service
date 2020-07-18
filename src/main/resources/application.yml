@@ -14,7 +14,7 @@ spring:
     active: dev
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://192.168.2.6:3306/crawler_db?useUnicode=true&characterEncoding=UTF-8&useSSL=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+    url: jdbc:mysql://192.168.2.6:3306/crawler_db?useUnicode=true&characterEncoding=UTF-8&useSSL=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai
     username: crawler
     password: crawler@12345
     hikari:
@@ -32,13 +32,18 @@ spring:
       enabled: true
       force: true
       charset: UTF-8
-  jpa:    hibernate:
-      ddl-auto: update      naming:        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-    #properties:      #hibernate:
+  jpa:
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    #properties:
+      #hibernate:
         #hbm2ddl:
           #auto: none
         #dialect: org.hibernate.dialect.MySQL5InnoDBDialect
-    show-sql: true                        
+    show-sql: true      
+                  
   redis: 
     host: 192.168.2.6
     port: 6379
@@ -46,7 +51,9 @@ spring:
     timeout: 15
   # spring data
   data:
-    # mongodb    mongodb:      host: 192.168.2.6
+    # mongodb
+    mongodb:
+      host: 192.168.2.6
       port: 27017
       username: crawler
       password: test1234
